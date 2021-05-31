@@ -11,38 +11,42 @@ from pathlib import Path
 import psutil
 from pynput import keyboard, mouse
 
+
 class FantomeRecord:
     """Enregistre tous les événements clavier et souris
     dans un fichier pendant un certain temps,
     pour pouvoir ensuite les rejoueravec FantomePlay.
     """
 
-    def __init__(self):
-        # Temps au lancement du script = temps origine
-        # pour rejouer ensuite à cette origine
-        self.t_zero = time()
-
+    def __init__(self, periode):
         # Pour l'enregistrement
         self.lines = []
         self.loop = 1
-        self.every = 20
+        self.every = periode
         self.t_record = time()
         self.thread_save()
         dt = datetime.now().strftime("%Y_%m_%d_%H_%M")
-        create_directory("./recordings")
-        self.record_dir = f"./recordings/cap_{dt}"
+        fantome = str(Path.home()) + "/fantome"
+        print("Le dossier fantome est:", fantome)
+        create_directory(fantome)
+        self.record_dir = f"{fantome}/cap_{dt}"
+        print("Le dossier de record est:", self.record_dir)
         create_directory(self.record_dir)
+
+        # pour le moindre offset possible
+        self.t_zero = time()
 
     def on_move(self, x, y):
         # Différentiel de temps en 100 centième de secondes
-        dt = int(10000*(time() - self.t_zero))
+        t = time()
+        dt = int(1000*(t - self.t_zero))
 
-        # #print('Pointer moved to {0}'.format((x, y)))
         self.lines.append(["move", dt, (x, y)])
+
 
     def on_click(self, x, y, button, pressed):
         # Différentiel de temps en 100 centième de secondes
-        dt = int(10000*(time() - self.t_zero))
+        dt = int(1000*(time() - self.t_zero))
 
         a = 'Pressed' if pressed else 'Released'
         print(f'{a} at {(x, y)} with {button}')
@@ -58,7 +62,7 @@ class FantomeRecord:
 
     def on_scroll(self, x, y, dx, dy):
         # Différentiel de temps en 100 centième de secondes
-        dt = int(10000*(time() - self.t_zero))
+        dt = int(1000*(time() - self.t_zero))
 
         a = 'down' if dy < 0 else 'up'
         print(f'Scrolled {a} at {(x, y)}')
@@ -66,7 +70,7 @@ class FantomeRecord:
 
     def on_press(self, key):
         # Différentiel de temps en 100 centième de secondes
-        dt = int(10000*(time() - self.t_zero))
+        dt = int(1000*(time() - self.t_zero))
 
         try:  # alphanumeric key
             print(key.char)
@@ -116,11 +120,14 @@ class FantomeRecord:
 class FantomePlay:
     """Rejoue ce qui a été enregistré par FantomeRecord"""
 
-    def __init__(self, dossier):
+    def __init__(self):
 
-        self.t_zero = time()
+        self.t_zero = None
+        self.offset = 0
+        self.previous = 0
 
-        self.fichiers = get_all_files_list(dossier, [".json"])
+        fantome = str(Path.home()) + "/fantome"
+        self.fichiers = get_all_files_list(fantome, [".json"])
         print("Liste des fichiers à répéter")
         for fichier in self.fichiers:
             print("    ", fichier)
@@ -128,6 +135,7 @@ class FantomePlay:
         for fichier in self.fichiers:
             with open(fichier) as fd:
                 data = fd.read()
+                print("data lues")
             fd.close()
             self.data = json.loads(data)
             print("Longueur des datas =", len(self.data))
@@ -137,38 +145,54 @@ class FantomePlay:
         kb_ctrl = keyboard.Controller()
         mouse_ctrl = mouse.Controller()
 
-        loop = 1
-        while loop and self.data:
-            for action in self.data:
-                while  time() - (self.t_zero + (action[1]/10000)) < 0:
+        self.t_zero = time()
+        self.offset = self.data[0][1]/1000
+        self.previous = self.offset
 
-                    # action[0] "move" "click" "press" "scroll"
-                    if action[0] == "move":
-                        mouse_ctrl.position = action[2][0], action[2][1]
+        print("toto")
+        for action in self.data:
 
-                    elif action[0] == "click":
-                        if action[2] == "left":
-                            mouse_ctrl.press(mouse.Button.left)
-                            mouse_ctrl.release(mouse.Button.left)
-                        elif action[2] == "right":
-                            mouse_ctrl.press(mouse.Button.right)
-                            mouse_ctrl.release(mouse.Button.right)
-                        elif action[2] == "middle":
-                            mouse_ctrl.press(mouse.Button.middle)
-                            mouse_ctrl.release(mouse.Button.middle)
+            # action[0] "move" "click" "press" "scroll"
+            if action[0] == "move":
+                mouse_ctrl.position = action[2][0], action[2][1]
 
-                    elif action[2] == "scroll":
-                        # Scroll two steps down
-                        # ["scroll", 389848, "down", 1114, 1118, 0, -1]
-                        # ["scroll", dt, a, x, y, dx, dy]
-                        mouse_ctrl.scroll(action[5], action[6])
+            elif action[0] == "click":
+                mouse_ctrl.position = action[4]
+                # #sleep(0.1)
+                if action[2] == "left":
+                    mouse_ctrl.press(mouse.Button.left)
+                    # #sleep(0.1)
+                    mouse_ctrl.release(mouse.Button.left)
+                elif action[2] == "right":
+                    mouse_ctrl.press(mouse.Button.right)
+                    # #sleep(0.1)
+                    mouse_ctrl.release(mouse.Button.right)
+                elif action[2] == "middle":
+                    mouse_ctrl.press(mouse.Button.middle)
+                    # #sleep(0.1)
+                    mouse_ctrl.release(mouse.Button.middle)
 
-                    elif action[0] == "press":
-                        key = action[2]
-                        if key == keyboard.Key.esc:
-                            self.loop = 0
-                        kb_ctrl.press(key)
-                        kb_ctrl.release(key)
+            elif action[2] == "scroll":
+                # Scroll two steps down
+                # ["scroll", 389848, "down", 1114, 1118, 0, -1]
+                # ["scroll", dt, a, x, y, dx, dy]
+                mouse_ctrl.position = action[3], action[4]
+                # #sleep(0.1)
+                mouse_ctrl.scroll(action[5], action[6])
+
+            elif action[0] == "press":
+                key = action[2]
+                if key == keyboard.Key.esc:
+                    self.loop = 0
+                kb_ctrl.press(key)
+                kb_ctrl.release(key)
+
+            dt = action[1]/1000 - self.previous
+            self.previous = action[1]/1000 - self.offset
+            if dt > 0:
+                sleep(dt/20)
+            else:
+                print("erreur", self.previous, dt)
 
 
 def create_directory(directory):
@@ -239,14 +263,11 @@ def get_navigateur_pid():
             print("bingo:", key)
 
 
-
 if __name__ == '__main__':
 
-    fantome_record = FantomeRecord()
-    fantome_record.listen()
+    # #fantome_record = FantomeRecord(20)
+    # #fantome_record.listen()
 
-    # #dossier = "/media/data/3D/projets/fantome/fantome/recordings"
-    # #fantome_play = FantomePlay(dossier)
-    # #fantome_play.repeat()
+    fantome_play = FantomePlay()
 
     # #get_navigateur_pid()
