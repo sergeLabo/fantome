@@ -28,10 +28,10 @@ long_line_behaviour=1
 long_line_column=80
 
 [files]
-current_page=1
+current_page=2
 FILE_NAME_0=0;None;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2Frequirements.txt;0;4
-FILE_NAME_1=6151;Python;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2Ffantome%2Ffantome.py;0;4
-FILE_NAME_2=109280;JSON;0;EUTF-8;0;1;1;%2Fhome%2Fserge%2Ffantome%2Fcap_2021_05_31_15_18%2Fcap_2021_05_31_15_18.json;0;4
+FILE_NAME_1=8544;Python;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2Ffantome%2Ffantome.py;0;4
+FILE_NAME_2=0;None;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2F.gitignore;0;4
 
 [VTE]
 last_dir=/media/data/3D/projets/formation_python

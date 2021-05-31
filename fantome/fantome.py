@@ -122,7 +122,6 @@ class FantomePlay:
 
     def __init__(self):
 
-        self.t_zero = None
         self.offset = 0
         self.previous = 0
 
@@ -135,7 +134,6 @@ class FantomePlay:
         for fichier in self.fichiers:
             with open(fichier) as fd:
                 data = fd.read()
-                print("data lues")
             fd.close()
             self.data = json.loads(data)
             print("Longueur des datas =", len(self.data))
@@ -145,12 +143,15 @@ class FantomePlay:
         kb_ctrl = keyboard.Controller()
         mouse_ctrl = mouse.Controller()
 
-        self.t_zero = time()
+        t_zero = time()
         self.offset = self.data[0][1]/1000
         self.previous = self.offset
 
-        print("toto")
         for action in self.data:
+            print(time() - (t_zero + (action[1]/1000)))
+            # Attente
+            while (time() - (t_zero + (action[1]/1000))) < 0:
+                sleep(0.01)
 
             # action[0] "move" "click" "press" "scroll"
             if action[0] == "move":
@@ -158,26 +159,27 @@ class FantomePlay:
 
             elif action[0] == "click":
                 mouse_ctrl.position = action[4]
-                # #sleep(0.1)
-                if action[2] == "left":
-                    mouse_ctrl.press(mouse.Button.left)
-                    # #sleep(0.1)
-                    mouse_ctrl.release(mouse.Button.left)
-                elif action[2] == "right":
-                    mouse_ctrl.press(mouse.Button.right)
-                    # #sleep(0.1)
-                    mouse_ctrl.release(mouse.Button.right)
-                elif action[2] == "middle":
-                    mouse_ctrl.press(mouse.Button.middle)
-                    # #sleep(0.1)
-                    mouse_ctrl.release(mouse.Button.middle)
+
+                if action[3] == 'Pressed':
+                    if action[2] == "left":
+                        mouse_ctrl.press(mouse.Button.left)
+                        print("left pressed")
+                    elif action[2] == "right":
+                        mouse_ctrl.press(mouse.Button.right)
+                    elif action[2] == "middle":
+                        mouse_ctrl.press(mouse.Button.middle)
+
+                if action[3] == 'Released':
+                    if action[2] == "left":
+                        mouse_ctrl.release(mouse.Button.left)
+                    elif action[2] == "right":
+                        mouse_ctrl.release(mouse.Button.right)
+                    elif action[2] == "middle":
+                        mouse_ctrl.release(mouse.Button.middle)
 
             elif action[2] == "scroll":
-                # Scroll two steps down
-                # ["scroll", 389848, "down", 1114, 1118, 0, -1]
                 # ["scroll", dt, a, x, y, dx, dy]
                 mouse_ctrl.position = action[3], action[4]
-                # #sleep(0.1)
                 mouse_ctrl.scroll(action[5], action[6])
 
             elif action[0] == "press":
@@ -186,13 +188,6 @@ class FantomePlay:
                     self.loop = 0
                 kb_ctrl.press(key)
                 kb_ctrl.release(key)
-
-            dt = action[1]/1000 - self.previous
-            self.previous = action[1]/1000 - self.offset
-            if dt > 0:
-                sleep(dt/20)
-            else:
-                print("erreur", self.previous, dt)
 
 
 def create_directory(directory):
@@ -265,7 +260,7 @@ def get_navigateur_pid():
 
 if __name__ == '__main__':
 
-    # #fantome_record = FantomeRecord(20)
+    # #fantome_record = FantomeRecord(40)
     # #fantome_record.listen()
 
     fantome_play = FantomePlay()
