@@ -20,7 +20,7 @@ Créer un lanceur sur le bureau avec
 python3 /chemin/vers/fantome/fantome_record.py
 ```
 
-Si ça marche bien, tester l'ajout de nouveaux enregistrement avec
+Si ça marche bien, tester l'ajout de nouveaux enregistrements avec
 ```bash
 python3 /chemin/vers/fantome/fantome_record.py 0
 ```
@@ -43,4 +43,4 @@ Créer un lanceur sur le bureau avec
 python3 /chemin/vers/fantome/fantome_play.py
 ```
 
-__C'est impossible de l'arrêter !!!!!!!!!!!!!!!!!!!!__
+__Ctrl + Alt + Q pour arrêter__

@@ -21,6 +21,10 @@ class FantomePlay:
         for fichier in self.fichiers:
             print("    ", fichier)
 
+        with keyboard.GlobalHotKeys({'<ctrl>+<alt>+q': self.on_activate_q})\
+                                    as hot:
+            hot.join()
+
         for fichier in self.fichiers:
             with open(fichier) as fd:
                 data = fd.read()
@@ -28,6 +32,10 @@ class FantomePlay:
             self.data = json.loads(data)
             print("Longueur des datas =", len(self.data))
             self.repeat()
+
+    def on_activate_q(self):
+        print('<ctrl>+<alt>+q pressed je quitte')
+        os._exit(0)
 
     def repeat(self):
         kb_ctrl = keyboard.Controller()
