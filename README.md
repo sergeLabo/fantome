@@ -20,11 +20,6 @@ Créer un lanceur sur le bureau avec
 python3 /chemin/vers/fantome/fantome_record.py
 ```
 
-Si ça marche bien, tester l'ajout de nouveaux enregistrements avec
-```bash
-python3 /chemin/vers/fantome/fantome_record.py 0
-```
-
 Les enregistrements se font dans votre home dans un dossier fantome
 
 Ctrl + Alt + Q pour arrêter l'enregistrement
@@ -35,7 +30,15 @@ Enregistrement de 2 mn minimum
     1 : efface les précédents enregistrements, valeur par défaut
     """
 
+### Plus fort
+Si ça marche bien, tester l'ajout de nouveaux enregistrements avec
+```bash
+python3 /chemin/vers/fantome/fantome_record.py 0
+```
+
 ### Lancement du script pour jouer
+
+Toutes les fenêtres doivent être fermées
 
 Créer un lanceur sur le bureau avec
 

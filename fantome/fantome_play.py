@@ -3,6 +3,7 @@ import os
 from time import time, sleep
 import json
 from pathlib import Path
+import threading
 
 from pynput import keyboard, mouse
 
@@ -21,21 +22,25 @@ class FantomePlay:
         for fichier in self.fichiers:
             print("    ", fichier)
 
-        with keyboard.GlobalHotKeys({'<ctrl>+<alt>+q': self.on_activate_q})\
-                                    as hot:
-            hot.join()
-
         for fichier in self.fichiers:
             with open(fichier) as fd:
                 data = fd.read()
             fd.close()
             self.data = json.loads(data)
             print("Longueur des datas =", len(self.data))
-            self.repeat()
+            self.thread_repeat()
+
+        with keyboard.GlobalHotKeys({'<ctrl>+<alt>+q': self.on_activate_q})\
+                                    as hot:
+            hot.join()
 
     def on_activate_q(self):
         print('<ctrl>+<alt>+q pressed je quitte')
         os._exit(0)
+
+    def thread_repeat(self):
+        t_play = threading.Thread(target=self.repeat)
+        t_play.start()
 
     def repeat(self):
         kb_ctrl = keyboard.Controller()
