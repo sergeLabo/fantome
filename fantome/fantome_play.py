@@ -1,14 +1,9 @@
 
 import os
-import subprocess
 from time import time, sleep
-from datetime import datetime
-import webbrowser
 import json
-import threading
 from pathlib import Path
 
-import psutil
 from pynput import keyboard, mouse
 
 
@@ -87,22 +82,6 @@ class FantomePlay:
                 kb_ctrl.release(key)
 
 
-def create_directory(directory):
-    """Crée le répertoire avec le chemin absolu, ou relatif"""
-    try:
-        # mode=0o777 est par défaut
-        Path(directory).mkdir(mode=0o777, parents=False)
-        print("Création du répertoire: {}".format(directory))
-    except FileExistsError as e:
-        print(e)
-        print("Le répertoire {} existe.".format(directory))
-    except PermissionError as e:
-        print(e)
-        print("Problème de droits avec le répertoire {}".format(directory))
-    except:
-        print("Erreur avec {}".format(directory))
-        os._exit(0)
-
 def get_all_files_list(directory, extentions):
     """Lit le dossier et tous les sous-dosssiers.
     Retourne la liste de tous les fichiers avec les extentions de
@@ -117,42 +96,6 @@ def get_all_files_list(directory, extentions):
                     file_list.append(str(Path(path, name)))
 
     return file_list
-
-def get_navigateur_pid():
-    """python3 -m webbrowser -t 'http://www.python.org'
-        'mozilla' Mozilla('mozilla')
-        'firefox' Mozilla('mozilla')
-        'netscape' Mozilla('netscape')
-        'galeon' Galeon('galeon')
-        'epiphany' Galeon('epiphany')
-        'skipstone' BackgroundBrowser('skipstone')
-        'kfmclient' Konqueror()
-        'konqueror' Konqueror()
-        'kfm' Konqueror()
-        'mosaic' BackgroundBrowser('mosaic')
-        'opera' Opera()
-        'grail' Grail()
-        'links' GenericBrowser('links')
-        'elinks' Elinks('elinks')
-        'lynx' GenericBrowser('lynx')
-        'w3m' GenericBrowser('w3m')
-        'windows-default' WindowsDefault
-        'macosx' MacOSX('default')
-        'safari' MacOSX('safari')
-        'google-chrome' Chrome('google-chrome')
-        'chrome' Chrome('chrome')
-        'chromium' Chromium('chromium')
-        'chromium-browser' Chromium('chromium-browser')
-    """
-
-    a = webbrowser.get()
-    # #print(dir(a))
-    # #print(a)
-    # #print(a.background, a.basename, a.name)
-    procs = {p.pid: p.info for p in psutil.process_iter(['name', 'username'])}
-    for key, val in procs.items():
-        if a.name in val["name"]:
-            print("bingo:", key)
 
 
 if __name__ == '__main__':

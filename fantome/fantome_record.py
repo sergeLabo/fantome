@@ -1,15 +1,14 @@
 
 import os
+import sys
 import subprocess
 from time import time, sleep
 from datetime import datetime
-import webbrowser
 import json
 import threading
 from pathlib import Path
 import shutil
 
-import psutil
 from pynput import keyboard, mouse
 
 
@@ -93,6 +92,13 @@ class FantomeRecord:
                 print(" ")
                 self.lines.append(["press", dt, ' '])
 
+    def on_activate(self):
+        print('Global hotkey activated!')
+        os._exit(0)
+
+    def for_canonical(self, f):
+        return lambda k: f(self.listener.canonical(k))
+
     def on_release(self, key):
         if key == keyboard.Key.esc:
             self.loop = 0
@@ -102,11 +108,18 @@ class FantomeRecord:
         """Collect events until released"""
         print("Listener Start ...")
 
+        hotkey = keyboard.HotKey(keyboard.HotKey.parse('<ctrl>+<alt>+q'),
+                                 self.on_activate)
+
         with mouse.Listener(self.on_move, self.on_click, self.on_scroll)\
                             as self.listener:
-            with keyboard.Listener(self.on_press, self.on_release)\
-                            as self.listener:
+            with keyboard.Listener(self.for_canonical(hotkey.press),
+                                   self.for_canonical(hotkey.release))\
+                                   as self.listener:
                 self.listener.join()
+
+        with keyboard.GlobalHotKeys({'<ctrl>+<alt>+q': on_activate_q}) as h:
+            h.join()
 
         print("Listener Stop ...")
 
@@ -125,12 +138,11 @@ class FantomeRecord:
                     print(f"{self.fichier} enregistré.")
                 fd.close()
 
-                # #self.lines = []
-                # #self.t_record = time()
-                # Un seul enregistrement
-                self.loop = 0
+                self.lines = []
+                self.t_record = time()
+                # Un seul enregistrement pour test
+                #self.loop = 0
             sleep(1)
-
 
 
 def create_directory(directory):
@@ -150,8 +162,33 @@ def create_directory(directory):
         os._exit(0)
 
 
+def main(argv):
 
-if __name__ == '__main__':
+    print("Ctrl + Alt + Q pour arrêter l'enregistrement")
+    print("Enregistrement de 2 mn minimum")
 
-    fantome_record = FantomeRecord(120, 1)
+    usage = """fantome_record.py <0 ou 1>
+    0 : le nouvel enregistrement est ajouté aux précédents
+    1 : efface les précédents enregistrements, valeur par défaut
+    """
+
+    if len(argv) == 2:
+        d = argv[1]
+        try:
+            delete = int(d)
+            if delete not in [0, 1]:
+                print(usage)
+                os._exit(0)
+        except:
+            print(usage)
+
+    elif len(argv) == 1:
+        delete = 1
+
+    periode = 120
+    fantome_record = FantomeRecord(periode, delete)
     fantome_record.listen()
+
+
+if __name__ == "__main__":
+   main(sys.argv)
