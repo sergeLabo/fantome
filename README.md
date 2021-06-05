@@ -8,42 +8,43 @@ Simulation d'un travaileur du net par une activité clavier/souris
 sudo pip3 install pynput
 ```
 
-### Lancement du script pour enregistrer
+### Utilisation
 
-Toutes les fenêtres doivent être fermées
+#### Enregistrement
+* Aller dans le dossier fantome. Rendre exécutable les fichier record.sh et play.sh
+* Ouvrir votre navigateur Plein Ecran
+* Réafficher le dossier fantome en cliquant dans la barre du tableau de bord
+* Double cliquer sur record.sh
+* Lancer dans un terminal
+* Cliquer dans la fenêtre du navigateur
+* Naviguer
+* Pour arrêter __Ctrl + Alt + Q__ pour que les actions soient enregistées !!!!!
+* Fermer le terminal
 
-Pour faire un nouvel enregistrement et effacer les précédents:
+#### Rejouer
 
-Créer un lanceur sur le bureau avec
+* Aller dans le dossier fantome.
+* Ouvrir votre navigateur Plein Ecran
+* Réafficher le dossier fantome en cliquant dans la barre du tableau de bord
+* Double cliquer sur play.sh
+* Cliquer dans la fenêtre du navigateur
+* Ca devrait jouer
+* Pour arrêter __Ctrl + Alt + Q__
+* Fermer le terminal
 
-```bash
-python3 /chemin/vers/fantome/fantome_record.py
-```
 
-Les enregistrements se font dans votre home dans un dossier fantome
+### Comment améliorer ?
 
-Ctrl + Alt + Q pour arrêter l'enregistrement
-Enregistrement de 2 mn minimum
+* la procédure est super lourde
+* le navigateur doit être Plein Ecran pour avoir toujours la même taille
+* lancer par le script le navigateur en Plein Ecran
 
-    usage = """fantome_record.py <0 ou 1>
-    0 : le nouvel enregistrement est ajouté aux précédents
-    1 : efface les précédents enregistrements, valeur par défaut
-    """
+### Bugs
 
-### Plus fort
-Si ça marche bien, tester l'ajout de nouveaux enregistrements avec
-```bash
-python3 /chemin/vers/fantome/fantome_record.py 0
-```
+* je ne comprends pas pourquoi les terminaux ne quitte pas à la fin
 
-### Lancement du script pour jouer
 
-Toutes les fenêtres doivent être fermées
 
-Créer un lanceur sur le bureau avec
+### Merci à
 
-```bash
-python3 /chemin/vers/fantome/fantome_play.py
-```
-
-__Ctrl + Alt + Q pour arrêter__
+  * [La Labomedia](https://labomedia.org)

@@ -5,7 +5,7 @@ import subprocess
 from time import time, sleep
 from datetime import datetime
 import json
-import threading
+# #import threading
 from pathlib import Path
 import shutil
 
@@ -21,14 +21,15 @@ class FantomeRecord:
     def __init__(self, periode, delete_previous_recordings):
         # Pour l'enregistrement
         self.lines = []
-        self.loop = 1
-        self.every = periode
-        self.t_record = time()
-        self.thread_save()
+        # #self.loop = 1
+        # #self.every = periode
+        # #self.t_record = time()
+        # #self.thread_save()
+
+        # Suppression du dossier
+        fantome = str(Path.home()) + "/fantome"
 
         if delete_previous_recordings:
-            # Suppression du dossier
-            fantome = str(Path.home()) + "/fantome"
             # Delete all contents of a directory
             try:
                shutil.rmtree(fantome)
@@ -39,14 +40,16 @@ class FantomeRecord:
         print("Le dossier fantome est:", fantome)
         create_directory(fantome)
 
-        # Creation d'un sous répertoire si plusieurs enregistrement
+        # Creation d'un sous répertoire
+        # pour pouvoir faire plusieurs enregistrements avec
+        # delete_previous_recordings = 0
         dt = datetime.now().strftime("%Y_%m_%d_%H_%M")
         self.record_dir = f"{fantome}/cap_{dt}"
 
         print("Le dossier de record est:", self.record_dir)
         create_directory(self.record_dir)
 
-        # pour le moindre offset possible
+        # à la fin pour le moindre offset possible
         self.t_zero = time()
 
     def on_move(self, x, y):
@@ -92,24 +95,39 @@ class FantomeRecord:
                 print(" ")
                 self.lines.append(["press", dt, ' '])
 
-    def on_activate(self):
-        print('Global hotkey activated!')
-        os._exit(0)
-
-    def for_canonical(self, f):
-        return lambda k: f(self.listener.canonical(k))
-
     def on_release(self, key):
         if key == keyboard.Key.esc:
             self.loop = 0
             self.listener.stop()
+
+    def on_activate_q(self):
+        print('\nGlobal hotkey <ctrl>+<alt>+q activated!\n')
+        self.final_save()
+        print("Fichier enregistré", self.fichier)
+        os._exit(0)
+
+    def final_save(self):
+        dt = datetime.now().strftime("%Y_%m_%d_%H_%M")
+        self.fichier = self.record_dir + f"/cap_{dt}.json"
+        with open(self.fichier, "w") as fd:
+            fd.write(json.dumps(self.lines))
+            print(f"{self.fichier} enregistré.")
+        fd.close()
+
+    # #def on_activate_s(self):
+        # #print('Global hotkey <ctrl>+<alt>+s activated!')
+
+    def for_canonical(self, f):
+        return lambda k: f(self.listener.canonical(k))
 
     def listen(self):
         """Collect events until released"""
         print("Listener Start ...")
 
         hotkey = keyboard.HotKey(keyboard.HotKey.parse('<ctrl>+<alt>+q'),
-                                 self.on_activate)
+                                 self.on_activate_q)
+        # #hotkey = keyboard.HotKey(keyboard.HotKey.parse('<ctrl>+<alt>+s'),
+                                 # #self.on_activate_s)
 
         with mouse.Listener(self.on_move, self.on_click, self.on_scroll)\
                             as self.listener:
@@ -118,31 +136,28 @@ class FantomeRecord:
                                    as self.listener:
                 self.listener.join()
 
-        with keyboard.GlobalHotKeys({'<ctrl>+<alt>+q': on_activate_q}) as h:
-            h.join()
-
         print("Listener Stop ...")
 
-    def thread_save(self):
+    # #def thread_save(self):
+        # #t_save = threading.Thread(target=self.save)
+        # #t_save.start()
 
-        t_save = threading.Thread(target=self.save)
-        t_save.start()
+    # #def save(self):
+        # #while self.loop:
+            # #if time() - self.t_record > self.every:
+                # #dt = datetime.now().strftime("%Y_%m_%d_%H_%M")
+                # #self.fichier = self.record_dir + f"/cap_{dt}.json"
+                # #with open(self.fichier, "w") as fd:
+                    # #fd.write(json.dumps(self.lines))
+                    # #print(f"{self.fichier} enregistré.")
+                # #fd.close()
 
-    def save(self):
-        while self.loop:
-            if time() - self.t_record > self.every:
-                dt = datetime.now().strftime("%Y_%m_%d_%H_%M")
-                self.fichier = self.record_dir + f"/cap_{dt}.json"
-                with open(self.fichier, "w") as fd:
-                    fd.write(json.dumps(self.lines))
-                    print(f"{self.fichier} enregistré.")
-                fd.close()
-
-                self.lines = []
-                self.t_record = time()
-                # Un seul enregistrement pour test
-                #self.loop = 0
-            sleep(1)
+                # #self.lines = []
+                # #self.t_zero = time()
+                # #self.t_record = time()
+                # ## Un seul enregistrement pour test
+                # ##self.loop = 0
+            # #sleep(1)
 
 
 def create_directory(directory):
