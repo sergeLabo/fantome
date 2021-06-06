@@ -5,7 +5,7 @@ import subprocess
 from time import time, sleep
 from datetime import datetime
 import json
-# #import threading
+import webbrowser
 from pathlib import Path
 import shutil
 
@@ -21,10 +21,7 @@ class FantomeRecord:
     def __init__(self, periode, delete_previous_recordings):
         # Pour l'enregistrement
         self.lines = []
-        # #self.loop = 1
-        # #self.every = periode
-        # #self.t_record = time()
-        # #self.thread_save()
+        self.start = 0
 
         # Suppression du dossier
         fantome = str(Path.home()) + "/fantome"
@@ -33,6 +30,7 @@ class FantomeRecord:
             # Delete all contents of a directory
             try:
                shutil.rmtree(fantome)
+               print("Effacement des précédents enregistrements")
             except:
                print('Error while deleting directory')
 
@@ -49,39 +47,43 @@ class FantomeRecord:
         print("Le dossier de record est:", self.record_dir)
         create_directory(self.record_dir)
 
-        # à la fin pour le moindre offset possible
+        url = "labomedia.org"
+        webbrowser.open(url, new=1, autoraise=True)
+
         self.t_zero = time()
 
     def on_move(self, x, y):
-        # Différentiel de temps en 100 centième de secondes
-        t = time()
-        dt = int(1000*(t - self.t_zero))
-
-        self.lines.append(["move", dt, (x, y)])
+        if self.start:
+            # Différentiel de temps en 100 centième de secondes
+            t = time()
+            dt = int(1000*(t - self.t_zero))
+            self.lines.append(["move", dt, (x, y)])
 
     def on_click(self, x, y, button, pressed):
-        # Différentiel de temps en 100 centième de secondes
-        dt = int(1000*(time() - self.t_zero))
+        if self.start:
+            # Différentiel de temps en 100 centième de secondes
+            dt = int(1000*(time() - self.t_zero))
 
-        a = 'Pressed' if pressed else 'Released'
-        print(f'{a} at {(x, y)} with {button}')
+            a = 'Pressed' if pressed else 'Released'
+            print(f'{a} at {(x, y)} with {button}')
 
-        if button == mouse.Button.left:
-            button = "left"
-        elif button == mouse.Button.right:
-            button = "right"
-        elif button == mouse.Button.middle:
-            button = "middle"
+            if button == mouse.Button.left:
+                button = "left"
+            elif button == mouse.Button.right:
+                button = "right"
+            elif button == mouse.Button.middle:
+                button = "middle"
 
-        self.lines.append(["click", dt, button, a, (x, y)])
+            self.lines.append(["click", dt, button, a, (x, y)])
 
     def on_scroll(self, x, y, dx, dy):
-        # Différentiel de temps en 100 centième de secondes
-        dt = int(1000*(time() - self.t_zero))
+        if self.start:
+            # Différentiel de temps en 100 centième de secondes
+            dt = int(1000*(time() - self.t_zero))
 
-        a = 'down' if dy < 0 else 'up'
-        print(f'Scrolled {a} at {(x, y)}')
-        self.lines.append(["scroll", dt, a, x, y, dx, dy])
+            a = 'down' if dy < 0 else 'up'
+            print(f'Scrolled {a} at {(x, y)}')
+            self.lines.append(["scroll", dt, a, x, y, dx, dy])
 
     def on_press(self, key):
         # Différentiel de temps en 100 centième de secondes
@@ -97,14 +99,22 @@ class FantomeRecord:
 
     def on_release(self, key):
         if key == keyboard.Key.esc:
-            self.loop = 0
-            self.listener.stop()
+            print("bizarre")
 
     def on_activate_q(self):
         print('\nGlobal hotkey <ctrl>+<alt>+q activated!\n')
-        self.final_save()
-        print("Fichier enregistré", self.fichier)
-        os._exit(0)
+
+        if self.start == 0:
+            self.start = 1
+            # zéro au début de l'enregistrement
+            self.t_zero = time()
+            print("Enregistrement commencé ...")
+            print("Ctrl + Alt + Q pour stopper ...")
+        elif self.start == 1:
+            self.final_save()
+            self.listener.stop()
+            print("Fichier enregistré", self.fichier)
+            os._exit(0)
 
     def final_save(self):
         dt = datetime.now().strftime("%Y_%m_%d_%H_%M")
@@ -114,50 +124,22 @@ class FantomeRecord:
             print(f"{self.fichier} enregistré.")
         fd.close()
 
-    # #def on_activate_s(self):
-        # #print('Global hotkey <ctrl>+<alt>+s activated!')
-
     def for_canonical(self, f):
         return lambda k: f(self.listener.canonical(k))
 
     def listen(self):
         """Collect events until released"""
         print("Listener Start ...")
-
+        print("\n\n   Ctrl + Alt + Q pour commencer l'enregistrement ...")
         hotkey = keyboard.HotKey(keyboard.HotKey.parse('<ctrl>+<alt>+q'),
-                                 self.on_activate_q)
-        # #hotkey = keyboard.HotKey(keyboard.HotKey.parse('<ctrl>+<alt>+s'),
-                                 # #self.on_activate_s)
+                                                        self.on_activate_q)
 
         with mouse.Listener(self.on_move, self.on_click, self.on_scroll)\
                             as self.listener:
-            with keyboard.Listener(self.for_canonical(hotkey.press),
-                                   self.for_canonical(hotkey.release))\
+            with keyboard.Listener(on_press=self.for_canonical(hotkey.press),
+                                   on_release=self.for_canonical(hotkey.release))\
                                    as self.listener:
                 self.listener.join()
-
-        print("Listener Stop ...")
-
-    # #def thread_save(self):
-        # #t_save = threading.Thread(target=self.save)
-        # #t_save.start()
-
-    # #def save(self):
-        # #while self.loop:
-            # #if time() - self.t_record > self.every:
-                # #dt = datetime.now().strftime("%Y_%m_%d_%H_%M")
-                # #self.fichier = self.record_dir + f"/cap_{dt}.json"
-                # #with open(self.fichier, "w") as fd:
-                    # #fd.write(json.dumps(self.lines))
-                    # #print(f"{self.fichier} enregistré.")
-                # #fd.close()
-
-                # #self.lines = []
-                # #self.t_zero = time()
-                # #self.t_record = time()
-                # ## Un seul enregistrement pour test
-                # ##self.loop = 0
-            # #sleep(1)
 
 
 def create_directory(directory):
@@ -175,7 +157,6 @@ def create_directory(directory):
     except:
         print("Erreur avec {}".format(directory))
         os._exit(0)
-
 
 def main(argv):
 

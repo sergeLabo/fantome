@@ -7,42 +7,26 @@ Simulation d'un travaileur du net par une activité clavier/souris
 ```bash
 sudo pip3 install pynput
 ```
+Tous les requirements sont dans requirements.txt pour installation dans un venv
 
 ### Utilisation
 
 #### Enregistrement
 * Aller dans le dossier fantome. Rendre exécutable les fichier record.sh et play.sh
-* Ouvrir votre navigateur Plein Ecran
-* Réafficher le dossier fantome en cliquant dans la barre du tableau de bord
 * Double cliquer sur record.sh
 * Lancer dans un terminal
-* Cliquer dans la fenêtre du navigateur
-* Naviguer
-* Pour arrêter __Ctrl + Alt + Q__ pour que les actions soient enregistées !!!!!
-* Fermer le terminal
-
-#### Rejouer
-
-* Aller dans le dossier fantome.
-* Ouvrir votre navigateur Plein Ecran
-* Réafficher le dossier fantome en cliquant dans la barre du tableau de bord
-* Double cliquer sur play.sh
-* Cliquer dans la fenêtre du navigateur
-* Ca devrait jouer
+* Maximiser votre navigateur
+* Lancer avec __Ctrl + Alt + Q__
 * Pour arrêter __Ctrl + Alt + Q__
 * Fermer le terminal
 
+#### Jouer
 
-### Comment améliorer ?
-
-* la procédure est super lourde
-* le navigateur doit être Plein Ecran pour avoir toujours la même taille
-* lancer par le script le navigateur en Plein Ecran
-
-### Bugs
-
-* je ne comprends pas pourquoi les terminaux ne quitte pas à la fin
-
+* Double cliquer sur play.sh
+* Maximiser votre navigateur
+* Pour lancer le jeu __Ctrl + Alt + Q__
+* Pour arrêter __Ctrl + Alt + Q__
+* Fermer le terminal
 
 
 ### Merci à

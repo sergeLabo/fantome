@@ -28,15 +28,12 @@ long_line_behaviour=1
 long_line_column=80
 
 [files]
-current_page=6
-FILE_NAME_0=6;None;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2Frequirements.txt;0;4
-FILE_NAME_1=6512;Python;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2Ffantome%2Ffantome_record.py;0;4
-FILE_NAME_2=820;Python;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2Ffantome%2Ffantome_play.py;0;4
-FILE_NAME_3=957;Python;0;EUTF-8;0;1;0;%2Fhome%2Fserge%2FTéléchargements%2Fpynput-1.7.3%2Flib%2Fpynput%2Fkeyboard%2F__init__.py;0;4
-FILE_NAME_4=38;Sh;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2Frecord.sh;0;4
-FILE_NAME_5=10;Sh;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2Fplay.sh;0;4
-FILE_NAME_6=1220;Markdown;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2FREADME.md;0;4
-FILE_NAME_7=2885;Markdown;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Fformation_python%2FREADME.md;0;4
+current_page=3
+FILE_NAME_0=65;None;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2Frequirements.txt;0;4
+FILE_NAME_1=680;Markdown;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2FREADME.md;0;4
+FILE_NAME_2=38;Sh;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2Frecord.sh;0;4
+FILE_NAME_3=4164;Python;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2Ffantome%2Ffantome_record.py;0;4
+FILE_NAME_4=1466;Python;0;EUTF-8;0;1;0;%2Fmedia%2Fdata%2F3D%2Fprojets%2Ffantome%2Ffantome%2Ffantome_play.py;0;4
 
 [VTE]
 last_dir=/media/data/3D/projets/formation_python

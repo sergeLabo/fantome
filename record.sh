@@ -1,2 +1,2 @@
 
-python3 ./fantome/fantome_record.py 0
+python3 ./fantome/fantome_record.py 1
