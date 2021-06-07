@@ -109,10 +109,12 @@ class FantomePlay:
 
                 elif action[0] == "press":
                     key = action[2]
-                    if key == keyboard.Key.esc:
-                        self.loop = 0
-                    self.kb_ctrl.press(key)
-                    self.kb_ctrl.release(key)
+                    if key == 'enter':
+                        self.kb_ctrl.press(keyboard.Key.enter)
+                        self.kb_ctrl.release(keyboard.Key.enter)
+                    else:
+                        self.kb_ctrl.press(key)
+                        self.kb_ctrl.release(key)
         os._exit(0)
 
 def get_all_files_list(directory, extentions):

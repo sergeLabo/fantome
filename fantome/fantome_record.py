@@ -12,6 +12,21 @@ import shutil
 import pynput
 
 
+SPECIAL_KEYS = {
+                "space": " ",
+                "alt_l": "alt_l",
+                "backspace": "backspace",
+                "ctrl_l": "ctrl_l",
+                "delete": "delete",
+                "enter": "enter",
+                "esc": "esc",
+                "f1": "f1",
+                "up": "up",
+                "down": "down",
+                "left": "left",
+                "right": "right"
+                }
+
 class FantomeRecord:
     """Enregistre tous les événements clavier et souris
     dans un fichier pendant un certain temps,
@@ -84,16 +99,17 @@ class FantomeRecord:
             self.lines.append(["scroll", dt, a, x, y, dx, dy])
 
     def on_press(self, key):
+        global SPECIAL_KEYS
         # Différentiel de temps en millièmes de secondes
         dt = int(1000*(time() - self.t_zero))
 
         try:  # alphanumeric key
-            print("press", key.char)
+            print("Action press de", key.char)
             self.lines.append(["press", dt, key.char])
-        except AttributeError:  # special key
-            if key.name == "space":
-                print("press", " ")
-                self.lines.append(["press", dt, ' '])
+        except AttributeError as e:
+            print("Special Key =", key.name)
+            if key.name in SPECIAL_KEYS:
+                self.lines.append(["press", dt, SPECIAL_KEYS['enter']])
 
     def on_release(self, key):
         # pas appelé !
@@ -148,7 +164,6 @@ class FantomeRecord:
         self.mouse_listener.start()
         self.keyboard_listener.start()
         self.hot_listener.start()
-        # TODO vérifier si utile
         self.keyboard_listener.join()
         self.mouse_listener.join()
         self.hot_listener.join()
