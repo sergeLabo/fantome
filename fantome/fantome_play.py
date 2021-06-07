@@ -20,6 +20,10 @@ class FantomePlay:
         for fichier in self.fichiers:
             print("    ", fichier)
 
+        self.kb_ctrl = keyboard.Controller()
+        self.mouse_ctrl = mouse.Controller()
+        self.loop = 1
+
         self.all_data = []
         for fichier in self.fichiers:
             with open(fichier) as fd:
@@ -33,7 +37,7 @@ class FantomePlay:
         webbrowser.open(url, new=1, autoraise=True)
 
         self.start = 0
-        print("\n\n   Ctrl + Alt + Q pour commencer à jouer ...")
+        print("\n\n   Ctrl + Alt + Q pour commencer à répéter ...")
 
         with keyboard.GlobalHotKeys({'<ctrl>+<alt>+q': self.on_activate_q})\
                                     as hot:
@@ -47,9 +51,8 @@ class FantomePlay:
             self.start = 1
             self.thread_repeat()
             # zéro au début de l'enregistrement
-            print("Enregistrement commencé ...")
+            print("Répétition commencée ...")
             print("Ctrl + Alt + Q pour stopper ...")
-
         else:
             print('je quitte ...')
             self.loop = 0
@@ -61,56 +64,56 @@ class FantomePlay:
         t_play.start()
 
     def repeat(self):
-        kb_ctrl = keyboard.Controller()
-        mouse_ctrl = mouse.Controller()
-
         for data in self.all_data:
             t_zero = time()
-            for action in data:
+            offset = data[1][1]/1000
+            print("offset =", offset, "t_zero =", t_zero)
+
+            # le 1er de data est le q du départ avec un t-zero faux
+            for action in data[1:]:
                 # #print(action)
-                # Attente
-                t_scale = action[1] * 1
-                while time() - (t_zero + (t_scale/1000)) < 0:
-                    sleep(0.01)
-                    # #print(time() - (t_zero + (t_scale/1000)))
+                # Attente: action à (t_zero + action[1]/1000)
+                while time() - t_zero  + offset - action[1]/1000 < 0:
+                    # #print(time() - t_zero  - offset - action[1]/1000)
+                    sleep(0.001)
 
                 # action[0] "move" "click" "press" "scroll"
                 if action[0] == "move":
-                    mouse_ctrl.position = action[2][0], action[2][1]
+                    self.mouse_ctrl.position = action[2][0], action[2][1]
 
                 elif action[0] == "click":
-                    mouse_ctrl.position = action[4]
+                    self.mouse_ctrl.position = action[4]
 
                     if action[3] == 'Pressed':
                         if action[2] == "left":
-                            mouse_ctrl.press(mouse.Button.left)
+                            self.mouse_ctrl.press(mouse.Button.left)
                             print("left pressed")
                         elif action[2] == "right":
-                            mouse_ctrl.press(mouse.Button.right)
+                            self.mouse_ctrl.press(mouse.Button.right)
                         elif action[2] == "middle":
-                            mouse_ctrl.press(mouse.Button.middle)
+                            self.mouse_ctrl.press(mouse.Button.middle)
 
                     if action[3] == 'Released':
                         if action[2] == "left":
-                            mouse_ctrl.release(mouse.Button.left)
+                            self.mouse_ctrl.release(mouse.Button.left)
                         elif action[2] == "right":
-                            mouse_ctrl.release(mouse.Button.right)
+                            self.mouse_ctrl.release(mouse.Button.right)
                         elif action[2] == "middle":
-                            mouse_ctrl.release(mouse.Button.middle)
+                            self.mouse_ctrl.release(mouse.Button.middle)
 
                 elif action[0] == "scroll":
                     # a = 'down' if dy < 0 else 'up'
                     # ["scroll", dt, a, x, y, dx, dy]
-                    mouse_ctrl.position = action[3], action[4]
-                    mouse_ctrl.scroll(action[5], action[6])
+                    self.mouse_ctrl.position = action[3], action[4]
+                    self.mouse_ctrl.scroll(action[5], action[6])
 
                 elif action[0] == "press":
                     key = action[2]
                     if key == keyboard.Key.esc:
                         self.loop = 0
-                    kb_ctrl.press(key)
-                    kb_ctrl.release(key)
-
+                    self.kb_ctrl.press(key)
+                    self.kb_ctrl.release(key)
+        os._exit(0)
 
 def get_all_files_list(directory, extentions):
     """Lit le dossier et tous les sous-dosssiers.

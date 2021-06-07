@@ -12,6 +12,7 @@ bin/
 
 # Geany
 *.geany
+fantome.geany
 
 # Blender
 *.blend1

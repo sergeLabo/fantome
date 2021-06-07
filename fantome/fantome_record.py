@@ -9,7 +9,7 @@ import webbrowser
 from pathlib import Path
 import shutil
 
-from pynput import keyboard, mouse
+import pynput
 
 
 class FantomeRecord:
@@ -50,35 +50,33 @@ class FantomeRecord:
         url = "labomedia.org"
         webbrowser.open(url, new=1, autoraise=True)
 
-        self.t_zero = time()
-
     def on_move(self, x, y):
         if self.start:
-            # Différentiel de temps en 100 centième de secondes
+            # Différentiel de temps en millièmes de secondes
             t = time()
             dt = int(1000*(t - self.t_zero))
             self.lines.append(["move", dt, (x, y)])
 
     def on_click(self, x, y, button, pressed):
         if self.start:
-            # Différentiel de temps en 100 centième de secondes
+            # Différentiel de temps en millièmes de secondes
             dt = int(1000*(time() - self.t_zero))
 
             a = 'Pressed' if pressed else 'Released'
             print(f'{a} at {(x, y)} with {button}')
 
-            if button == mouse.Button.left:
+            if button == pynput.mouse.Button.left:
                 button = "left"
-            elif button == mouse.Button.right:
+            elif button == pynput.mouse.Button.right:
                 button = "right"
-            elif button == mouse.Button.middle:
+            elif button == pynput.mouse.Button.middle:
                 button = "middle"
 
             self.lines.append(["click", dt, button, a, (x, y)])
 
     def on_scroll(self, x, y, dx, dy):
         if self.start:
-            # Différentiel de temps en 100 centième de secondes
+            # Différentiel de temps en millièmes de secondes
             dt = int(1000*(time() - self.t_zero))
 
             a = 'down' if dy < 0 else 'up'
@@ -86,19 +84,20 @@ class FantomeRecord:
             self.lines.append(["scroll", dt, a, x, y, dx, dy])
 
     def on_press(self, key):
-        # Différentiel de temps en 100 centième de secondes
+        # Différentiel de temps en millièmes de secondes
         dt = int(1000*(time() - self.t_zero))
 
         try:  # alphanumeric key
-            print(key.char)
+            print("press", key.char)
             self.lines.append(["press", dt, key.char])
         except AttributeError:  # special key
             if key.name == "space":
-                print(" ")
+                print("press", " ")
                 self.lines.append(["press", dt, ' '])
 
     def on_release(self, key):
-        if key == keyboard.Key.esc:
+        # pas appelé !
+        if key == pynput.keyboard.Key.esc:
             print("bizarre")
 
     def on_activate_q(self):
@@ -106,15 +105,19 @@ class FantomeRecord:
 
         if self.start == 0:
             self.start = 1
-            # zéro au début de l'enregistrement
-            self.t_zero = time()
             print("Enregistrement commencé ...")
             print("Ctrl + Alt + Q pour stopper ...")
         elif self.start == 1:
             self.final_save()
-            self.listener.stop()
+            self.keyboard_listener.stop()
+            self.mouse_listener.stop()
+            self.hot_listener.stop()
             print("Fichier enregistré", self.fichier)
             os._exit(0)
+
+    def on_activate_d(self):
+        print('\nGlobal hotkey <ctrl>+<alt>+d activated!\n')
+        print("non utilisé ! ...")
 
     def final_save(self):
         dt = datetime.now().strftime("%Y_%m_%d_%H_%M")
@@ -125,21 +128,30 @@ class FantomeRecord:
         fd.close()
 
     def for_canonical(self, f):
-        return lambda k: f(self.listener.canonical(k))
+        return lambda k: f(self.keyboard_listener.canonical(k))
 
     def listen(self):
         """Collect events until released"""
         print("Listener Start ...")
         print("\n\n   Ctrl + Alt + Q pour commencer l'enregistrement ...")
-        hotkey = keyboard.HotKey(keyboard.HotKey.parse('<ctrl>+<alt>+q'),
-                                                        self.on_activate_q)
+        # zéro au début de l'enregistrement
+        self.t_zero = time()
 
-        with mouse.Listener(self.on_move, self.on_click, self.on_scroll)\
-                            as self.listener:
-            with keyboard.Listener(on_press=self.for_canonical(hotkey.press),
-                                   on_release=self.for_canonical(hotkey.release))\
-                                   as self.listener:
-                self.listener.join()
+        self.mouse_listener = pynput.mouse.Listener(self.on_move, self.on_click,
+                                                    self.on_scroll)
+        self.keyboard_listener = pynput.keyboard.Listener(on_press=self.on_press,
+                                                    on_release=self.on_release)
+        self.hot_listener = pynput.keyboard.GlobalHotKeys({
+                                        '<ctrl>+<alt>+q': self.on_activate_q,
+                                        '<ctrl>+<alt>+d': self.on_activate_d
+                                        })
+        self.mouse_listener.start()
+        self.keyboard_listener.start()
+        self.hot_listener.start()
+        # TODO vérifier si utile
+        self.keyboard_listener.join()
+        self.mouse_listener.join()
+        self.hot_listener.join()
 
 
 def create_directory(directory):
@@ -188,3 +200,27 @@ def main(argv):
 
 if __name__ == "__main__":
    main(sys.argv)
+
+
+
+        # #hotkey = pynput.keyboard.HotKey(pynput.keyboard.HotKey.parse('<ctrl>+<alt>+q'),
+                                                              # #self.on_activate_q)
+
+        # #with mouse.Listener(self.on_move, self.on_click, self.on_scroll)\
+                            # #as self.listener:
+            # #with keyboard.Listener(on_press=self.for_canonical(hotkey.press),
+                                   # #on_release=self.for_canonical(hotkey.release))\
+                                   # #as self.listener:
+                # #self.listener.join()
+
+        # ## Listen to mouse events
+        # #with pynput.mouse.Listener(self.on_move, self.on_click, self.on_scroll) as mouse_listener:
+            # #mouse_listener.join()
+
+        # ## Listen to keyboard events
+        # #with pynput.keyboard.Listener(on_press=on_press, on_release=on_release) as keyboard_listener:
+            # #keyboard_listener.join()
+
+        # #with pynput.keyboard.GlobalHotKeys({'<ctrl>+<alt>+q': self.on_activate_q,
+                                    # #'<ctrl>+<alt>+d': self.on_activate_d}) as hot:
+            # #hot.join()
