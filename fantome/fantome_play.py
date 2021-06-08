@@ -12,14 +12,14 @@ from pynput import keyboard, mouse
 SPECIAL_KEYS = {
                 "space": keyboard.Key.space,
                 "backspace": keyboard.Key.backspace,
-                "delete": "delete",
+                "delete": keyboard.Key.delete,
                 "enter": keyboard.Key.enter,
-                "esc": "esc",
+                "esc": keyboard.Key.esc,
                 "f1": "f1",
-                "up": "up",
-                "down": "down",
-                "left": "left",
-                "right": "right"
+                "up": keyboard.Key.up,
+                "down": keyboard.Key.down,
+                "left": keyboard.Key.left,
+                "right": keyboard.Key.right
                 }
 
 class FantomePlay:
@@ -126,8 +126,11 @@ class FantomePlay:
                         self.kb_ctrl.press(SPECIAL_KEYS[key])
                         self.kb_ctrl.release(SPECIAL_KEYS[key])
                     else:
-                        self.kb_ctrl.press(key)
-                        self.kb_ctrl.release(key)
+                        #translater = str.maketrans('qwerty', 'azerty')
+                        a_key = key  #.translate(translater)
+                        self.kb_ctrl.press(a_key)
+                        self.kb_ctrl.release(a_key)
+
         os._exit(0)
 
 def get_all_files_list(directory, extentions):
