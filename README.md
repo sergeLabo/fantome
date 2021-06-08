@@ -2,6 +2,11 @@
 
 Simulation d'un travaileur du net par une activité clavier/souris
 
+### Wiki
+
+* [Clavier Souris Fantôme](https://ressources.labomedia.org/clavier_souris_fantome)
+
+
 ### Installation
 
 ```bash
