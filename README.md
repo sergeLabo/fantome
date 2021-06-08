@@ -38,6 +38,38 @@ Tous les requirements sont dans requirements.txt pour installation dans un [venv
 
 __Le clavier AZERTY dans firefox est joué en QWERTY__
 
+
+### Installation dans un venv
+
+#### Documentation
+
+* [venv](https://ressources.labomedia.org/virtualenv) sur ressources.labomedia.org
+
+#### Pourquoi ?
+
+L'installation des dépendances se fait dans le dossier fantome, cala ne touche pas à votre système, pas de sudo.
+
+#### En terminal
+
+```bash
+python3.7 -m pip install --upgrade pip
+sudo apt install python3-venv
+```
+Télécharger les sources de fantome
+```bash
+cd /le/dossier/de/votre/projet/fantome
+python3 -m venv mon_env
+source mon_env/bin/activate
+python3 -m pip install -r requirements.txt
+```
+Pour excécuter fantome_record.py ou fantome_play.py
+```bash
+cd /le/dossier/de/votre/projet/fantome
+./mon_env/bin/python3 ./fantome/fantome_record.py
+# ou
+./mon_env/bin/python3 ./fantome/fantome_play.py
+```
+
 ### Merci à
 
   * [La Labomedia](https://labomedia.org)
