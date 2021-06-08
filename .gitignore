@@ -14,6 +14,7 @@ bin/
 *.geany
 fantome.geany
 doc/
+mon_env/
 
 # Blender
 *.blend1
