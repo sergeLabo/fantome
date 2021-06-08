@@ -7,7 +7,7 @@ Simulation d'un travaileur du net par une activité clavier/souris
 ```bash
 sudo pip3 install pynput psutil
 ```
-Tous les requirements sont dans requirements.txt pour installation dans un venv
+Tous les requirements sont dans requirements.txt pour installation dans un [venv](https://ressources.labomedia.org/virtualenv)
 
 ### Utilisation
 
