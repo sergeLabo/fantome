@@ -11,12 +11,11 @@ import shutil
 
 import pynput
 
+from get_navigateur_pid import get_navigateur_pid
 
 SPECIAL_KEYS = {
-                "space": " ",
-                "alt_l": "alt_l",
+                "space": "space",
                 "backspace": "backspace",
-                "ctrl_l": "ctrl_l",
                 "delete": "delete",
                 "enter": "enter",
                 "esc": "esc",
@@ -109,7 +108,7 @@ class FantomeRecord:
         except AttributeError as e:
             print("Special Key =", key.name)
             if key.name in SPECIAL_KEYS:
-                self.lines.append(["press", dt, SPECIAL_KEYS['enter']])
+                self.lines.append(["press", dt, SPECIAL_KEYS[key.name]])
 
     def on_release(self, key):
         # pas appelé !
@@ -128,6 +127,12 @@ class FantomeRecord:
             self.keyboard_listener.stop()
             self.mouse_listener.stop()
             self.hot_listener.stop()
+            # #webbrowser.stop()
+            pids = get_navigateur_pid()
+            print(pids)
+            for pid in pids:
+                os.system("kill -9 " + str(pid))
+                print("Fermeture du navigateur:", pid)
             print("Fichier enregistré", self.fichier)
             os._exit(0)
 

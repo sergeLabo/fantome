@@ -9,6 +9,19 @@ import webbrowser
 from pynput import keyboard, mouse
 
 
+SPECIAL_KEYS = {
+                "space": keyboard.Key.space,
+                "backspace": keyboard.Key.backspace,
+                "delete": "delete",
+                "enter": keyboard.Key.enter,
+                "esc": "esc",
+                "f1": "f1",
+                "up": "up",
+                "down": "down",
+                "left": "left",
+                "right": "right"
+                }
+
 class FantomePlay:
     """Rejoue ce qui a été enregistré par FantomeRecord"""
 
@@ -109,9 +122,9 @@ class FantomePlay:
 
                 elif action[0] == "press":
                     key = action[2]
-                    if key == 'enter':
-                        self.kb_ctrl.press(keyboard.Key.enter)
-                        self.kb_ctrl.release(keyboard.Key.enter)
+                    if key in SPECIAL_KEYS:
+                        self.kb_ctrl.press(SPECIAL_KEYS[key])
+                        self.kb_ctrl.release(SPECIAL_KEYS[key])
                     else:
                         self.kb_ctrl.press(key)
                         self.kb_ctrl.release(key)

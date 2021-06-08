@@ -13,6 +13,7 @@ bin/
 # Geany
 *.geany
 fantome.geany
+doc/
 
 # Blender
 *.blend1
