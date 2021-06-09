@@ -21,7 +21,8 @@ Tous les requirements sont dans requirements.txt pour installation dans un [venv
 * Aller dans le dossier fantome. Rendre exécutable les fichier record.sh et play.sh
 * Double cliquer sur record.sh
 * Lancer
-* Maximiser votre navigateur
+* Maximiser votre navigateur, avec un seul onglet ouvert sur https://labomedia.org
+* Pour lancer le jeu __Ctrl + Alt + Q__
 * Lancer avec __Ctrl + Alt + Q__
 * Pour arrêter __Ctrl + Alt + Q__
 * Toutes les fenêtres du navigateur seront fermèes par le script.
@@ -30,7 +31,7 @@ Tous les requirements sont dans requirements.txt pour installation dans un [venv
 
 * Double cliquer sur play.sh
 * Lancer
-* Maximiser votre navigateur
+* Maximiser votre navigateur, avec un seul onglet ouvert sur https://labomedia.org
 * Pour lancer le jeu __Ctrl + Alt + Q__
 * Pour arrêter __Ctrl + Alt + Q__
 
@@ -47,7 +48,7 @@ __Le clavier AZERTY dans firefox est joué en QWERTY__
 
 #### Pourquoi ?
 
-L'installation des dépendances se fait dans le dossier fantome, cala ne touche pas à votre système, pas de sudo.
+L'installation des dépendances se fait dans le dossier fantome, cela ne touche pas à votre système, pas de sudo.
 
 #### En terminal
 

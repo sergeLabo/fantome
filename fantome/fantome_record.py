@@ -148,9 +148,6 @@ class FantomeRecord:
             print(f"{self.fichier} enregistré.")
         fd.close()
 
-    def for_canonical(self, f):
-        return lambda k: f(self.keyboard_listener.canonical(k))
-
     def listen(self):
         """Collect events until released"""
         print("Listener Start ...")
@@ -222,6 +219,8 @@ if __name__ == "__main__":
    main(sys.argv)
 
 
+    # #def for_canonical(self, f):
+        # #return lambda k: f(self.keyboard_listener.canonical(k))
 
         # #hotkey = pynput.keyboard.HotKey(pynput.keyboard.HotKey.parse('<ctrl>+<alt>+q'),
                                                               # #self.on_activate_q)

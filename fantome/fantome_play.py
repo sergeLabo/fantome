@@ -8,6 +8,8 @@ import webbrowser
 
 from pynput import keyboard, mouse
 
+from get_navigateur_pid import get_navigateur_pid
+
 
 SPECIAL_KEYS = {
                 "space": keyboard.Key.space,
@@ -22,6 +24,7 @@ SPECIAL_KEYS = {
                 "right": keyboard.Key.right
                 }
 
+
 class FantomePlay:
     """Rejoue ce qui a été enregistré par FantomeRecord"""
 
@@ -34,8 +37,10 @@ class FantomePlay:
             print("    ", fichier)
 
         self.kb_ctrl = keyboard.Controller()
+        # #print(dir(self.kb_ctrl))
         self.mouse_ctrl = mouse.Controller()
         self.loop = 1
+        self.backspace = 0
 
         self.all_data = []
         for fichier in self.fichiers:
@@ -100,7 +105,6 @@ class FantomePlay:
                     if action[3] == 'Pressed':
                         if action[2] == "left":
                             self.mouse_ctrl.press(mouse.Button.left)
-                            print("left pressed")
                         elif action[2] == "right":
                             self.mouse_ctrl.press(mouse.Button.right)
                         elif action[2] == "middle":
@@ -122,16 +126,30 @@ class FantomePlay:
 
                 elif action[0] == "press":
                     key = action[2]
-                    if key in SPECIAL_KEYS:
-                        self.kb_ctrl.press(SPECIAL_KEYS[key])
-                        self.kb_ctrl.release(SPECIAL_KEYS[key])
-                    else:
-                        #translater = str.maketrans('qwerty', 'azerty')
-                        a_key = key  #.translate(translater)
-                        self.kb_ctrl.press(a_key)
-                        self.kb_ctrl.release(a_key)
+                    # #print("\n", key)
+                    # #print(self.kb_ctrl.keyboard_mapping)
+                    if key == "backspace":
+                        self.backspace = 1
 
-        os._exit(0)
+                    if key in SPECIAL_KEYS:
+                        self.kb_ctrl.tap(SPECIAL_KEYS[key])
+                        # #print("\n", key)
+                        # #print(self.kb_ctrl.keyboard_mapping)
+                    else:
+                        if self.backspace:
+                            if key in AZERTY:
+                                azerty_key = QWERTY[AZERTY.index(key)]
+                                # #print(key, azerty_key)
+                        else:
+                            azerty_key = key
+                        self.kb_ctrl.tap(azerty_key)
+
+        # fermer le navigateur à la main sinon session restore
+        #os._exit(0)
+
+
+QWERTY = "qwertyuiopasdfghjkl,zxcvbnm."
+AZERTY = "azertyuiopqsdfghjklmwxcvbn,:"
 
 def get_all_files_list(directory, extentions):
     """Lit le dossier et tous les sous-dosssiers.
@@ -152,3 +170,20 @@ def get_all_files_list(directory, extentions):
 if __name__ == '__main__':
 
     fantome_play = FantomePlay()
+
+"""
+['ALT_GR_MASK', 'ALT_MASK', 'CTRL_MASK', 'InvalidCharacterException', 'InvalidKeyException',
+'SHIFT_MASK', '_Key', '_KeyCode', '__class__', '__del__', '__delattr__', '__dict__',
+'__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__',
+'__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__',
+'__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__',
+'__str__', '__subclasshook__', '__weakref__', '_add_listener', '_as_modifier',
+'_borrow_lock', '_borrows', '_caps_lock', '_dead_key', '_display', '_emit', '_handle',
+'_key_to_keysym', '_keyboard_mapping', '_keysym', '_listener_cache', '_listener_lock',
+'_listeners', '_log', '_modifiers', '_modifiers_lock', '_receiver', '_remove_listener',
+'_resolve', '_resolve_borrowed', '_resolve_borrowing', '_resolve_dead', '_resolve_normal',
+'_resolve_special', '_send_key', '_shift_mask', '_update_keyboard_mapping', '_update_modifiers',
+
+'alt_gr_pressed', 'alt_pressed', 'ctrl_pressed', 'keyboard_mapping', 'modifiers',
+'press', 'pressed', 'release', 'shift_pressed', 'tap', 'touch', 'type']
+"""
