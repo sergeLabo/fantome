@@ -16,6 +16,11 @@ Tous les requirements sont dans requirements.txt pour installation dans un [venv
 
 ### Utilisation
 
+Les enregistrements se font dans un dossier fantome (son nom est fantome et non pas personne) de votre home.
+Il est créé automatiquement.
+
+Du coup, le dossier des sources de fantome ne doit pas être dans votre home.
+
 #### Enregistrement
 
 * Aller dans le dossier fantome. Rendre exécutable les fichier record.sh et play.sh
